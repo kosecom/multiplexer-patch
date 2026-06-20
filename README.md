@@ -1,51 +1,48 @@
 # Multiplexer Core Patch
 
-Stabilisiert den MCP-Multiplexer-Core in Hermes.
+Fixes critical stability and routing issues in the Hermes MCP multiplexer core.
 
-## Problem
+## Key Fixes
 
-Der Multiplexer-Core verursachte mehrere kritische Probleme:
+### Multi-Agent Session Routing (Telegram & Other Channels)
 
-### Stabilität
-- Verbindungsabbrüche bei gleichzeitigen Sessions
-- Race Conditions im Request-Routing
-- Fehlende Fehlerbehandlung bei Timeout-Szenarien
+**Problem:** All agents were replying exclusively through the main agent channel. Messages were processed correctly, but responses always routed back through the main agent instead of the responsible agent.
 
-### Telegram Multi-Agent Routing
-- Alle Agents haben ausschließlich über den Main Agent geantwortet
-- Nachrichten wurden zwar korrekt verarbeitet, aber die Antwort ging immer über den Main-Agent-Kanal zurück statt über den zuständigen Agent
-- Kein sauberes Session-Routing zwischen mehreren Agenten
+**Solution:** Implemented proper session isolation and routing logic. Each agent now correctly handles its own session responses.
 
-## Lösung
+### Core Stability
 
-Dieser Patch adressiert die Core-Probleme durch:
+**Problem:** The multiplexer core caused instability under load and parallel MCP connections:
+- Connection drops during concurrent sessions
+- Race conditions in request routing
+- Missing error handling in timeout scenarios
 
-- Robusteres Connection-Handling mit Retry-Logik
-- Thread-safe Request-Multiplexing
-- Verbesserte Timeout-Behandlung und Error-Recovery
-- Saubere Session-Isolation
-- Korrektes Multi-Agent-Session-Routing (Telegram und andere Kanäle)
+**Solution:**
+- Robust connection handling with retry logic
+- Thread-safe request multiplexing
+- Improved timeout handling and error recovery
+- Clean session isolation
 
 ## Installation
 
 ```bash
-cp MULTIPLEXER_PATCH.diff /pfad/zu/hermes/
-cd /pfad/zu/hermes
+cp MULTIPLEXER_PATCH.diff /path/to/hermes/
+cd /path/to/hermes
 git apply MULTIPLEXER_PATCH.diff
 ```
 
-## Inhalt
+## Contents
 
-| Datei | Beschreibung |
-|-------|-------------|
-| `MULTIPLEXER_PATCH.diff` | Vollständiger Core-Patch als Unified Diff |
+| File | Description |
+|------|-------------|
+| `MULTIPLEXER_PATCH.diff` | Complete core patch as unified diff |
 
-## Kompatibilität
+## Compatibility
 
 - **Hermes** v0.15.0+
 - Python 3.10+
 - MCP Protocol v1.0
 
-## Lizenz
+## License
 
 MIT
